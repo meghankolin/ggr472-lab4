@@ -17,15 +17,27 @@ const map = new mapboxgl.Map({
     zoom: 12 // starting zoom level
 });
 
+//Adding zoom and rotation controls
+map.addControl(new mapboxgl.NavigationControl());
+
+//Adding an option to make the map full-screen
+map.addControl(new mapboxgl.FullscreenControl());
 
 
 /*--------------------------------------------------------------------
 Step 2: VIEW GEOJSON POINT DATA ON MAP
 --------------------------------------------------------------------*/
 //HINT: Create an empty variable
+let cyclecollis;
+
 //      Use the fetch method to access the GeoJSON from your online repository
 //      Convert the response to JSON format and then store the response in your new variable
-
+fetch('https://raw.githubusercontent.com/meghankolin/ggr472-lab4/main/data/pedcyc_collision_06-21.geojson?token=GHSAT0AAAAAAB7V34MNSNTHEXB4OIWZAUIMZAYVPRA')
+    .then(response => response.json)
+    .then(response => {
+        console.log(response); //Check response in the console
+        cyclecollis = response; //Store GeoJSON as a variable using the URL from the fetch response
+    });
 
 
 /*--------------------------------------------------------------------
@@ -37,13 +49,11 @@ Step 2: VIEW GEOJSON POINT DATA ON MAP
 //      Use bounding box coordinates as argument in the turf hexgrid function
 
 
-
 /*--------------------------------------------------------------------
 Step 4: AGGREGATE COLLISIONS BY HEXGRID
 --------------------------------------------------------------------*/
 //HINT: Use Turf collect function to collect all '_id' properties from the collision points data for each heaxagon
 //      View the collect output in the console. Where there are no intersecting points in polygons, arrays will be empty
-
 
 
 // /*--------------------------------------------------------------------
@@ -55,5 +65,3 @@ Step 4: AGGREGATE COLLISIONS BY HEXGRID
 //        - The COUNT attribute
 //        - The maximum number of collisions found in a hexagon
 //      Add a legend and additional functionality including pop-up windows
-
-
