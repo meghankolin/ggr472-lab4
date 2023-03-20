@@ -23,6 +23,21 @@ map.addControl(new mapboxgl.NavigationControl());
 //Adding an option to make the map full-screen
 map.addControl(new mapboxgl.FullscreenControl());
 
+map.addSource('bikecollision', {
+    type: 'geojson',
+    data: cyclecollis //The variable created a little bit further down in the code.
+});
+
+map.addLayer({
+    'id': 'collisions',
+    'type': 'circle',
+    'source': 'bikecollision',
+    'paint': {
+        'circle-radius': 3,
+        'circle-color': '#4ddbff'
+    }
+})
+
 
 /*--------------------------------------------------------------------
 Step 2: VIEW GEOJSON POINT DATA ON MAP
