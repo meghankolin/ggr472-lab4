@@ -45,23 +45,24 @@ fetch('https://raw.githubusercontent.com/meghankolin/ggr472-lab4/main/data/pedcy
 --------------------------------------------------------------------*/
 //HINT: All code to create and view the hexgrid will go inside a map load event handler
 map.on('load', () => {
-    map.addSource('collisionpts', {
-        type: 'geojson',
-        data: bikecollision
-    });
+    //map.addSource('collisionpts', {
+    //    type: 'geojson',
+    //    data: bikecollision
+    //});
 
-    map.addLayer({
-        'id': 'bikepts',
-        'type': 'circle',
-        'source': 'collisionpts',
-        'paint': {
-            'circle-radius': 2,
-            'circle-color': '#f57f37'
-        }
-    });
+    //map.addLayer({
+    //    'id': 'bikepts',
+    //    'type': 'circle',
+    //    'source': 'collisionpts',
+    //    'paint': {
+    //        'circle-radius': 2,
+    //        'circle-color': '#f57f37'
+    //    }
+    //});
 
+    //First create a bounding box around the collision point data then store as a feature collection variable
     let bboxbikes; //Creating the variable in which the bounding box will be stored
-    let bbox = turf.envelope(collisionpts); //Creating the envelope around the points
+    let bbox = turf.envelope(bikecollision); //Creating the envelope around the points
     let bboxscaled = turf.transformScale(bbox, 1.10); //Scale bbox up by 10%
 
     //Putting the resulting envelope in GeoJSON format
@@ -69,17 +70,77 @@ map.on('load', () => {
         "type": "FeatureCollection",
         "features": [bboxscaled]
     };
-});
-//      First create a bounding box around the collision point data then store as a feature collection variable
-//      Access and store the bounding box coordinates as an array variable
-//      Use bounding box coordinates as argument in the turf hexgrid function
+
+    //Testing the box to ensure it worked
+    // map.addSource('collis-bbox', {
+    //    type: 'geojson',
+    //    data: bboxbikes,
+    //});
+
+    //map.addLayer({
+    //    'id': 'bike-box',
+    //    'type': 'fill',
+    //    'source': 'collis-bbox',
+    //    'paint': {
+    //        'fill-color': '#a0e7f0',
+    //        'fill-opacity': 0.5
+    //    }
+    //});
+
+    //      Access and store the bounding box coordinates as an array variable
+    console.log(bboxscaled)
+    console.log(bboxscaled.geometry.coordinates)
+
+    let bboxcoords = [bboxscaled.geometry.coordinates[0][0][0],
+                    bboxscaled.geometry.coordinates[0][0][1],
+                    bboxscaled.geometry.coordinates[0][2][0],
+                    bboxscaled.geometry.coordinates[0][2][1]];
+    //Use bounding box coordinates as argument in the turf hexgrid function
+    let hexnum = turf.hexGrid(bboxcoords, 0.5, { units: 'kilometers' });
 
 
 /*--------------------------------------------------------------------
 Step 4: AGGREGATE COLLISIONS BY HEXGRID
 --------------------------------------------------------------------*/
 //HINT: Use Turf collect function to collect all '_id' properties from the collision points data for each heaxagon
-//      View the collect output in the console. Where there are no intersecting points in polygons, arrays will be empty
+let collishex = turf.collect(hexnum, bikecollision, '_id', 'values')
+
+//Count the number of points within each hex
+let maxcollis = 0;
+
+collishex.features.forEach((feature) => {
+    feature.properties.COUNT = feature.properties.values.length
+    if (feature.properties.COUNT > maxcollis) {
+        maxcollis = feature.properties.COUNT
+    }
+});
+console.log(maxcollis);
+
+//View the collect output in the console. Where there are no intersecting points in polygons, arrays will be empty
+    map.addSource('collis-hex', {
+        type: 'geojson',
+        data: hexnum,
+    });
+
+    map.addLayer({
+        'id': 'collis-hex-sym',
+        'type': 'fill',
+        'source': 'collis-hex',
+        'paint': {
+            'fill-opacity': 0.5,
+            'fill-outline-color': "black",
+            'fill-color': [
+                "step",
+                ['get', 'COUNT'],
+                "white",
+                10, "#FFCDCA",
+                20, "#FF51C7",
+                30, "#480BA3",
+                40, "#03112E"
+            ]
+        }
+    });
+});
 
 
 // /*--------------------------------------------------------------------
