@@ -45,6 +45,7 @@ fetch('https://raw.githubusercontent.com/meghankolin/ggr472-lab4/main/data/pedcy
 --------------------------------------------------------------------*/
 //HINT: All code to create and view the hexgrid will go inside a map load event handler
 map.on('load', () => {
+    //Testing the collision points, commented out ater hexgrid was completed
     //map.addSource('collisionpts', {
     //    type: 'geojson',
     //    data: bikecollision
@@ -106,17 +107,27 @@ Step 4: AGGREGATE COLLISIONS BY HEXGRID
 let collishex = turf.collect(hexnum, bikecollision, '_id', 'values')
 
 //Count the number of points within each hex
-let maxcollis = 0;
+let maxcollis = 0; //Setting the lowest possible number
 
 collishex.features.forEach((feature) => {
     feature.properties.COUNT = feature.properties.values.length
-    if (feature.properties.COUNT > maxcollis) {
-        maxcollis = feature.properties.COUNT
+    if (feature.properties.COUNT > maxcollis) { //If the number of intersecting points is larger than zero...
+        maxcollis = feature.properties.COUNT //...change the value of maxcollis to than number
     }
 });
-console.log(maxcollis);
 
 //View the collect output in the console. Where there are no intersecting points in polygons, arrays will be empty
+console.log(maxcollis);
+
+
+// /*--------------------------------------------------------------------
+// Step 5: FINALIZE YOUR WEB MAP
+// --------------------------------------------------------------------*/
+//HINT: Think about the display of your data and usability of your web map.
+//      Update the addlayer paint properties for your hexgrid using:
+//        - an expression
+//        - The COUNT attribute
+//        - The maximum number of collisions found in a hexagon
     map.addSource('collis-hex', {
         type: 'geojson',
         data: hexnum,
@@ -133,22 +144,29 @@ console.log(maxcollis);
                 "step",
                 ['get', 'COUNT'],
                 "white",
-                10, "#FFCDCA",
-                20, "#FF51C7",
-                30, "#480BA3",
-                40, "#03112E"
+                10, "#FFECD2",
+                20, "#EC5F9A",
+                30, "#3E1491",
+                40, "#06145C"
             ]
         }
     });
 });
 
+//Add a legend and additional functionality including pop-up windows
+    //Including pop-up windows sharing information regarding the number of collisions occuring in each hex
+        map.on('click', 'collis-hex-sym', (e) => {
+            // Copy coordinates array.
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            const description = e.features[0].properties.COUNT;    
 
-// /*--------------------------------------------------------------------
-// Step 5: FINALIZE YOUR WEB MAP
-// --------------------------------------------------------------------*/
-//HINT: Think about the display of your data and usability of your web map.
-//      Update the addlayer paint properties for your hexgrid using:
-//        - an expression
-//        - The COUNT attribute
-//        - The maximum number of collisions found in a hexagon
-//      Add a legend and additional functionality including pop-up windows
+            // Setting the popup to appear over the object being clicked instead of appearing somewhere else.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML("<b>Number of collisions: </b>" + description)
+            .addTo(map);
+            });
