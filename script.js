@@ -59,6 +59,16 @@ map.on('load', () => {
             'circle-color': '#f57f37'
         }
     });
+
+    let bboxbikes; //Creating the variable in which the bounding box will be stored
+    let bbox = turf.envelope(collisionpts); //Creating the envelope around the points
+    let bboxscaled = turf.transformScale(bbox, 1.10); //Scale bbox up by 10%
+
+    //Putting the resulting envelope in GeoJSON format
+    bboxbikes = {
+        "type": "FeatureCollection",
+        "features": [bboxscaled]
+    };
 });
 //      First create a bounding box around the collision point data then store as a feature collection variable
 //      Access and store the bounding box coordinates as an array variable
