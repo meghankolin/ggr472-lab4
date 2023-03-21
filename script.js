@@ -39,11 +39,27 @@ fetch('https://raw.githubusercontent.com/meghankolin/ggr472-lab4/main/data/pedcy
         bikecollision = response; //Store GeoJSON as a variable using the URL from the fetch response
     });
 
-    
+
 /*--------------------------------------------------------------------
     Step 3: CREATE BOUNDING BOX AND HEXGRID
 --------------------------------------------------------------------*/
 //HINT: All code to create and view the hexgrid will go inside a map load event handler
+map.on('load', () => {
+    map.addSource('collisionpts', {
+        type: 'geojson',
+        data: bikecollision
+    });
+
+    map.addLayer({
+        'id': 'bikepts',
+        'type': 'circle',
+        'source': 'collisionpts',
+        'paint': {
+            'circle-radius': 2,
+            'circle-color': '#f57f37'
+        }
+    });
+});
 //      First create a bounding box around the collision point data then store as a feature collection variable
 //      Access and store the bounding box coordinates as an array variable
 //      Use bounding box coordinates as argument in the turf hexgrid function
