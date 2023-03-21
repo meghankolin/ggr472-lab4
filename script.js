@@ -88,14 +88,15 @@ map.on('load', () => {
     //    }
     //});
 
-    //      Access and store the bounding box coordinates as an array variable
+    //Access and store the bounding box coordinates as an array variable
     console.log(bboxscaled)
     console.log(bboxscaled.geometry.coordinates)
 
-    let bboxcoords = [bboxscaled.geometry.coordinates[0][0][0],
+    let bboxcoords = [bboxscaled.geometry.coordinates[0][0][0], //Coordinates obtained from developer tools
                     bboxscaled.geometry.coordinates[0][0][1],
                     bboxscaled.geometry.coordinates[0][2][0],
                     bboxscaled.geometry.coordinates[0][2][1]];
+
     //Use bounding box coordinates as argument in the turf hexgrid function
     let hexnum = turf.hexGrid(bboxcoords, 0.5, { units: 'kilometers' });
 
@@ -141,8 +142,8 @@ console.log(maxcollis);
             'fill-opacity': 0.5,
             'fill-outline-color': "black",
             'fill-color': [
-                "step",
-                ['get', 'COUNT'],
+                "step", //Adding a colour ramp
+                ['get', 'COUNT'], //Using the number of collisions to mark the different steps of the colour ramp
                 "white",
                 10, "#FFECD2",
                 20, "#EC5F9A",
@@ -166,7 +167,7 @@ console.log(maxcollis);
             }
 
             new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML("<b>Number of collisions: </b>" + description)
+            .setLngLat(e.lngLat) //Keeping the pop-up where I clicked
+            .setHTML("<b>Number of collisions: </b>" + description) //Adding the information to the pop-up
             .addTo(map);
             });
