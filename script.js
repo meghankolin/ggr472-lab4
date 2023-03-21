@@ -23,38 +23,23 @@ map.addControl(new mapboxgl.NavigationControl());
 //Adding an option to make the map full-screen
 map.addControl(new mapboxgl.FullscreenControl());
 
-map.addSource('bikecollision', {
-    type: 'geojson',
-    data: cyclecollis //The variable created a little bit further down in the code.
-});
-
-map.addLayer({
-    'id': 'collisions',
-    'type': 'circle',
-    'source': 'bikecollision',
-    'paint': {
-        'circle-radius': 3,
-        'circle-color': '#4ddbff'
-    }
-})
-
-
 /*--------------------------------------------------------------------
 Step 2: VIEW GEOJSON POINT DATA ON MAP
 --------------------------------------------------------------------*/
 //HINT: Create an empty variable
-let cyclecollis;
+// Create empty GeoJSON objects to hold point features
+let bikecollision;
 
-//      Use the fetch method to access the GeoJSON from your online repository
-//      Convert the response to JSON format and then store the response in your new variable
-fetch('https://raw.githubusercontent.com/meghankolin/ggr472-lab4/main/data/pedcyc_collision_06-21.geojson?token=GHSAT0AAAAAAB7V34MNSNTHEXB4OIWZAUIMZAYVPRA')
-    .then(response => response.json)
+//Use the fetch method to access the GeoJSON from your online repository
+fetch('https://raw.githubusercontent.com/meghankolin/ggr472-lab4/main/data/pedcyc_collision_06-21.geojson')
+    //Convert the response to JSON format and then store the response in your new variable
+    .then(response => response.json())
     .then(response => {
         console.log(response); //Check response in the console
-        cyclecollis = response; //Store GeoJSON as a variable using the URL from the fetch response
+        bikecollision = response; //Store GeoJSON as a variable using the URL from the fetch response
     });
 
-
+    
 /*--------------------------------------------------------------------
     Step 3: CREATE BOUNDING BOX AND HEXGRID
 --------------------------------------------------------------------*/
